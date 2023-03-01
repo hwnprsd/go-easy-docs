@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<style type="text/css" media="screen">
+    .code { 
+	    height: 100px
+    }
+</style>
+<body>
+    <h1>{{.ApplicationName}}</h1>
+    <p>{{.Description}}</p>
+    </br>
+    <h2>Routes</h1>
+    {{ with .Groups }}
+    	{{range .}}	
+	<hr/>
+	<h2>{{.Name}}</h2>
+	<hr/>
+    		{{ with .Routes}}
+    			{{range .}}	
+			<h3>{{.RouteType}} {{.GroupName}}{{.RouteName}}</h3>
+				<h3>{{.Description}}</h3>
+				<div id="body-{{.GroupName}}{{.RouteName}}" class="code">
+					{{.Body}}
+				</div>
+				<br/>
+				<button id="btn-{{.GroupName}}{{.RouteName}}">Request</button>
+				<br/>
+				<br/>
+				<div id="response-{{.GroupName}}{{.RouteName}}" class="code">
+				</div>
+			<hr/>
+			{{end}}
+		{{end}}
+	{{end}}
+    {{end}}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.15.2/ace.min.js" integrity="sha512-9wsrxhzNVuW9XQgRmpSG9i23hheWGRZt0+M+T4vA/CXPLNEPCGsTXHaQi8/U5/gpuboqT0tFW+1hhUPzA4UHQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+	const baseUrl = "http://localhost:3000"
+	for(const group of {{.Groups}}) {
+		for(const route of group.Routes) {
+			var editor = ace.edit("body-" + route.GroupName + route.RouteName, {
+				 mode: "ace/mode/json",
+			});
+			var responseEditor = ace.edit("response-" + route.GroupName + route.RouteName, {
+				 mode: "ace/mode/json",
+			});
+			responseEditor.setReadOnly(true)
+
+			editor.setValue(JSON.stringify(route.Body, null, 5), -1);
+			document.getElementById('btn-' + route.GroupName + route.RouteName).addEventListener('click', function(e) {
+				const postBody = editor.getValue()
+				const url = baseUrl + route.GroupName + route.RouteName
+				const responseId = "response-" + route.GroupName + route.RouteName
+				makePostRequest(url, postBody, responseId)
+			});
+		}
+	}
+
+	const makeGetRequest = async (url, responseId) => {
+		const editor = ace.edit(responseId, {
+			 mode: "ace/mode/json",
+		});
+		editor.setValue("Making API Call to " + url)
+		const res = await fetch(url, {
+			method: "GET",
+		})
+		const json = await res.json();
+		console.log(json)
+		editor.setValue(JSON.stringify(json, null, 3))
+	}
+
+	const makePostRequest = async (url, body, responseId) => {
+		const editor = ace.edit(responseId, {
+			 mode: "ace/mode/json",
+		});
+		editor.setValue("Making API Call to " + url)
+		const res = await fetch(url, {
+			method: "POST",
+			body: JSON.stringify(body),
+		})
+		const json = await res.json();
+		console.log(json)
+		editor.setValue(JSON.stringify(json, null, 3))
+	}
+</script>
+<script>
+
+</script>
+</body>
+</html>
