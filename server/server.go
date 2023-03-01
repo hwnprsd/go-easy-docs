@@ -14,13 +14,17 @@ type SwaggerApp struct {
 }
 
 type TestBody struct {
-	Foo      string `json:"foo"`
-	FancyFoo string `json:"FancyFoo"`
+	Foo      string `json:"foo" validate:"required"`
+	FancyFoo string `json:"fancy_foo_x" validate:"required"`
 }
 
 func (s SwaggerApp) testHandler(body TestBody) (any, error) {
-	log.Println(body.Foo)
+	log.Println("Body", body.Foo)
 	return "OKAY", nil
+}
+
+func (SwaggerApp) getTest() (any, error) {
+	return "Looks Good", nil
 }
 
 func Run() {
@@ -31,12 +35,14 @@ func Run() {
 	sApp := SwaggerApp{}
 
 	testGroup := utils.NewGroup(app, "/test")
-	utils.Post(testGroup, "/submit", TestBody{}, sApp.testHandler, nil)
+	utils.Post(testGroup, "/submit", TestBody{}, sApp.testHandler)
 	utils.Post(testGroup, "/rekt", TestBody{}, sApp.testHandler)
+	getGroup := utils.NewGroup(app, "/users")
+	utils.Get(getGroup, "/all", sApp.getTest)
 
 	// routes := app.GetRoutes()
 
-	viewData := utils.GenerateDocs("Go Docs", "This test")
+	viewData := utils.GenerateDocs("Runtime Docs in Go", "API Docs generated at runtime using HTML Templates and a very simple data structure")
 	app.Get("/docs", func(c *fiber.Ctx) error {
 		return c.Render("index", viewData)
 	})
