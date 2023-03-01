@@ -1,4 +1,4 @@
-# Runtime API Doc generation for Go-Fiber
+#  Runtime API Doc generation for Go-Fiber
 
 I personally dislike OpenAPI and Swagger because of how bloated it is for small projects. It comes with way too many features which I personally don't think I will ever use. 
 Along with this, creating swagger docs in Go inside comments is nothing short of a bad Developer Experience.
