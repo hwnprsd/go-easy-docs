@@ -1,10 +1,24 @@
 package fiberw
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+func handlePanic(c *fiber.Ctx) {
+	// Panic handler
+	if err := recover(); err != nil {
+		fmt.Println("We survived a panic")
+		fmt.Println(err)
+		c.Status(500).JSON(fiber.Map{
+			"status_code": 500,
+			"message":     "A server panic has occured",
+			"error":       err,
+		})
+	}
+}
 
 type PostRequestHandlerWithExtra[T any, Q any] func(body T, extra Q) (any, error)
 type PostRequestHandler[T any] func(body T) (any, error)
@@ -50,6 +64,7 @@ func PostWithExtra[T any, Q any](group *ApiGroup, routeName string, body T, hand
 	// Validate Body
 
 	group.Ctx.Post(routeName, func(ctx *fiber.Ctx) error {
+		defer handlePanic(ctx)
 		data := new(T)
 		log.Println("Before parsing")
 		log.Println(data)
@@ -114,6 +129,7 @@ func GetWithExtra[Q any](group *ApiGroup, routeName string, handler GetRequestHa
 	}
 
 	group.Ctx.Get(routeName, func(ctx *fiber.Ctx) error {
+		defer handlePanic(ctx)
 		extra, err := extraFunc(ctx)
 		if err != nil {
 			log.Printf("Error handling extrafunc")
