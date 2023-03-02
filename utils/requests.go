@@ -50,8 +50,16 @@ func PostWithExtra[T any, Q any](group *ApiGroup, routeName string, body T, hand
 	// Validate Body
 
 	group.Ctx.Post(routeName, func(ctx *fiber.Ctx) error {
-
-		if b, err := ValidateBody(&body, ctx); b {
+		data := new(T)
+		log.Println("Before parsing")
+		log.Println(data)
+		err := ctx.BodyParser(data)
+		if err != nil {
+			panic(err)
+		}
+		log.Println("After parsing")
+		log.Println(data)
+		if b, err := ValidateBody(data, ctx); b {
 			return ctx.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
 				"status_code": 400,
 				"error":       err,
@@ -62,7 +70,7 @@ func PostWithExtra[T any, Q any](group *ApiGroup, routeName string, body T, hand
 			log.Printf("Err")
 			return handleError(err, ctx)
 		}
-		response, err := handler(body, extra)
+		response, err := handler(*data, extra)
 		if err != nil {
 			return handleError(err, ctx)
 		}
