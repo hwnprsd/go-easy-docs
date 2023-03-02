@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/hwnprsd/go-api-docs/server"
+	"github.com/hwnprsd/go-easy-docs/server"
 )
 
 func main() {

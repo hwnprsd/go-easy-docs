@@ -1,4 +1,4 @@
-module github.com/hwnprsd/go-api-docs
+module github.com/hwnprsd/go-easy-docs
 
 go 1.19
 
