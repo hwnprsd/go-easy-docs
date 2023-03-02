@@ -1,20 +1,22 @@
-#  Runtime API Doc generation for Go-Fiber
+# Runtime API Doc generation for Go-Fiber
 
-I personally dislike OpenAPI and Swagger because of how bloated it is for small projects. It comes with way too many features which I personally don't think I will ever use. 
-Along with this, creating swagger docs in Go inside comments is nothing short of a bad Developer Experience.
+I created this project to provide a minimalistic, runtime API documentation generation tool for Go-Fiber. Unlike OpenAPI and Swagger, I wanted to create a tool that is simple and easy to use for small projects. This tool registers all routes on Fiber, generates documentation that includes the request body type, and creates a simple documentation page that can be shared with your team.
 
-So since one of my most recurring use case is be able to share some type of API docuemtnation with my UI developer, and I cannot be bothered to write and verify stuff in comments with absolutely no auto-comepletion of type check, I wanted to create a very minimal runtime-api-doc generation tool, which registers all your routes on fiber along with the Request Body Type and creates a very simple documentation meant for sharing with your other developers so they understand what you are up to.
-It currently only supports GET and POST request, and comes with a bunch of "OPINIONATED" request handler wrappers, which makes my workflow 100x faster (not exggerating).
+The tool currently supports GET and POST requests, and includes opinionated request handler wrappers that provide faster workflow. Some features of the tool include:
 
-Some features include
-1. Auto documentation generation - Being able to serve it on any route you need with any level of authentication.
-2. Function wrappers for GET and POST requests, where handlers can just be functions / methods which take 1 argument of any DTO you have declared for that route (So your handler would look like `createStore(details StoreDetails)` instead of the pathetic `createStore(ctx *fiber.Ctx)` - Now things get more composable and you can call stuf from within one another without having to pass around a ctx you don't need.. 
-3. Pre-Validating your request body before feeding it to your handler (as 1 argument).
-4. Post-request error handling + Response structuring. All your handlers return (any, error) which can be used to construct predictable response structures and handle errors with appropriate http codes using the custom `RequestError` implememtion of `error`.
-4. Being able to access ctx via closure and keeping handler clean and typed at all times (so they are composable) - Ex. `createStore(data StoreData, queryData QueryData)` where `queryData` can be gotten using a special `getExtras(ctx *fiber.Ctx)` method call, where you can use `ctx` for the 2 times you need it in your application. 
+- Auto documentation generation: easily serve the documentation on any route, with any level of authentication.
+- Function wrappers for GET and POST requests: handlers can be functions or methods that take one argument of any DTO you have declared for that route. This allows for more composable handlers and cleaner, typed code.
+- Pre-validation of request body before feeding it to the handler.
+- Post-request error handling and response structuring: all handlers return `(any, error)` which can be used to construct predictable response structures and handle errors with appropriate HTTP codes using the custom `RequestError` implementation of `error`.
+- Access to ctx via closure, keeping handlers clean and typed at all times.
 
-I have no plans to maintain this further, but I will explore porting this to non-Fiber frameworks as well, if I want to use them.
-The swagger like UI can be made better as well and probably will be. 
+While this project currently only supports Go-Fiber, I may explore porting it to other frameworks in the future. Additionally, the Swagger-like UI may be improved in future versions of the tool.
+
+
+UI Example
+![image](https://user-images.githubusercontent.com/23007190/222369402-9b93eda5-a464-4f92-acff-b2aa0cdf3f95.png)
+
+
 
 
 Open Source - Take it
