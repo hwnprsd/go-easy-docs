@@ -14,7 +14,8 @@ While this project currently only supports Go-Fiber, I may explore porting it to
 
 
 UI Example
-![image](https://user-images.githubusercontent.com/23007190/222368037-86af7d05-59fe-4479-9907-3531268ae0b9.png)
+![image](https://user-images.githubusercontent.com/23007190/222369402-9b93eda5-a464-4f92-acff-b2aa0cdf3f95.png)
+
 
 
 
