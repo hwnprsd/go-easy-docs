@@ -108,12 +108,8 @@ var DocString = `
       		query = new URLSearchParams(queryParams)
       		url = url + "?" + query.toString()
       	}
-      	const res = await fetch(url + query ? "?" + queryParams : "", {
+      	const res = await fetch(url, {
       		method: "GET",
-      		headers: {
-      		      "Content-Type": "application/json",
-      		      // 'Content-Type': 'application/x-www-form-urlencoded',
-      	    },
       	})
       	const json = await res.json();
       	console.log(json)
@@ -155,19 +151,20 @@ var DocString = `
       			var editor = ace.edit("body-" + route.GroupName + route.RouteName, {
       				 mode: "ace/mode/json",
       			});
+
+			editor.setValue(JSON.stringify(route.Body, null, 5), -1);
       		}
       		var responseEditor = ace.edit("response-" + route.GroupName + route.RouteName, {
       			 mode: "ace/mode/json",
       		});
       		responseEditor.setReadOnly(true)
       
-      		editor.setValue(JSON.stringify(route.Body, null, 5), -1);
       		document.getElementById('btn-' + route.GroupName + route.RouteName).addEventListener('click', function(e) {
       			let query = false
       			if(route.HasQuery) {
       				query = {}
       				for (const q of route.Queries) {
-      					const id = route.GroupName+route.RouteName+"QUERY"+q
+      					const id = `${route.GroupName}${route.RouteName}QUERY${q}`
       					const value = document.getElementById(id)
       					query[q] = value.value
       					console.log("Setting query", query)
@@ -177,7 +174,7 @@ var DocString = `
       			if(route.HasParams) {
       				params = {}
       				for (const q of route.Params) {
-      					const id = route.GroupName + route.RouteName + "PARAM" + q
+      					const id = `${route.GroupName}${route.RouteName}PARAM${q}`
       					const value = document.getElementById(id)
       					params[q] = value.value
       				}

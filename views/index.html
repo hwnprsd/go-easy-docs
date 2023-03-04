@@ -105,12 +105,8 @@
       		query = new URLSearchParams(queryParams)
       		url = url + "?" + query.toString()
       	}
-      	const res = await fetch(url + query ? "?" + queryParams : "", {
+      	const res = await fetch(url, {
       		method: "GET",
-      		headers: {
-      		      "Content-Type": "application/json",
-      		      // 'Content-Type': 'application/x-www-form-urlencoded',
-      	    },
       	})
       	const json = await res.json();
       	console.log(json)
@@ -152,13 +148,14 @@
       			var editor = ace.edit("body-" + route.GroupName + route.RouteName, {
       				 mode: "ace/mode/json",
       			});
+
+			editor.setValue(JSON.stringify(route.Body, null, 5), -1);
       		}
       		var responseEditor = ace.edit("response-" + route.GroupName + route.RouteName, {
       			 mode: "ace/mode/json",
       		});
       		responseEditor.setReadOnly(true)
       
-      		editor.setValue(JSON.stringify(route.Body, null, 5), -1);
       		document.getElementById('btn-' + route.GroupName + route.RouteName).addEventListener('click', function(e) {
       			let query = false
       			if(route.HasQuery) {
