@@ -164,7 +164,7 @@ var DocString = `
       			if(route.HasQuery) {
       				query = {}
       				for (const q of route.Queries) {
-      					const id = `${route.GroupName}${route.RouteName}QUERY${q}`
+      					const id = route.GroupName + route.RouteName + "QUERY" + q
       					const value = document.getElementById(id)
       					query[q] = value.value
       					console.log("Setting query", query)
@@ -174,7 +174,7 @@ var DocString = `
       			if(route.HasParams) {
       				params = {}
       				for (const q of route.Params) {
-      					const id = `${route.GroupName}${route.RouteName}PARAM${q}`
+      					const id = route.GroupName + route.RouteName + "PARAM" + q
       					const value = document.getElementById(id)
       					params[q] = value.value
       				}
