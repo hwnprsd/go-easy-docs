@@ -32,6 +32,10 @@ func (s SwaggerApp) newTestHandler(body AddDaoDto) (any, error) {
 	return "OKAY", nil
 }
 
+func (s SwaggerApp) testHandlerWithQuery(body AddDaoDto, id string) (any, error) {
+	return id, nil
+}
+
 func (SwaggerApp) getTest() (any, error) {
 	return "Looks Good", nil
 }
@@ -44,8 +48,22 @@ func Run() {
 	sApp := SwaggerApp{}
 
 	testGroup := fiberw.NewGroup(app, "/test")
-	fiberw.Post(testGroup, "/submit", TestBody{}, sApp.testHandler)
+	fiberw.Post(testGroup, "/submit", TestBody{}, sApp.testHandler).WithQuery("tasty")
 	fiberw.Post(testGroup, "/rekt", TestBody{}, sApp.testHandler)
+	fiberw.PostWithExtra(testGroup, "/queryMe", AddDaoDto{}, sApp.testHandlerWithQuery, func(ctx *fiber.Ctx) (string, error) {
+		q := ctx.Query("simp")
+		return q, nil
+	}).WithQuery("simp")
+	fiberw.PostWithExtra(testGroup, "/pathMe/:address", AddDaoDto{}, sApp.testHandlerWithQuery, func(ctx *fiber.Ctx) (string, error) {
+		q1 := ctx.Params("address")
+		q2 := ctx.Query("maze")
+		return q1 + q2, nil
+	}).WithParam("address").WithQuery("maze")
+	fiberw.PostWithExtra(testGroup, "/pathMe2/:address", AddDaoDto{}, sApp.testHandlerWithQuery, func(ctx *fiber.Ctx) (string, error) {
+		q1 := ctx.Params("address")
+		q2 := ctx.Query("maze")
+		return q1 + q2, nil
+	}).WithParam("address").WithQuery("maze").WithParam("rand")
 
 	getGroup := fiberw.NewGroup(app, "/users")
 	fiberw.Get(getGroup, "/all", sApp.getTest)
@@ -104,10 +122,10 @@ func Run() {
 
 	// routes := app.GetRoutes()
 
-	viewData := fiberw.GenerateDocs("Runtime Docs in Go", "API Docs generated at runtime using HTML Templates and a very simple data structure")
-
 	app.Get("/docs", func(c *fiber.Ctx) error {
-		return c.Render("index", viewData)
+		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
+		fiberw.WriteApiDocumentation("Test Application", "Used to test go-auto-swagger", c)
+		return nil
 	})
 
 	log.Fatal(app.Listen(":3000"))

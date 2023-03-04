@@ -1,3 +1,6 @@
+package fiberw
+
+var DocString = `
 <!DOCTYPE html>
 <style type="text/css" media="screen">
    .code { 
@@ -164,7 +167,7 @@
       			if(route.HasQuery) {
       				query = {}
       				for (const q of route.Queries) {
-      					const id = `${route.GroupName}${route.RouteName}QUERY${q}`
+      					const id = route.GroupName+route.RouteName+"QUERY"+q
       					const value = document.getElementById(id)
       					query[q] = value.value
       					console.log("Setting query", query)
@@ -174,7 +177,7 @@
       			if(route.HasParams) {
       				params = {}
       				for (const q of route.Params) {
-      					const id = `${route.GroupName}${route.RouteName}PARAM${q}`
+      					const id = route.GroupName + route.RouteName + "PARAM" + q
       					const value = document.getElementById(id)
       					params[q] = value.value
       				}
@@ -205,4 +208,4 @@
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 </html>
-
+`
