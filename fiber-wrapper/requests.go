@@ -20,10 +20,10 @@ func handlePanic(c *fiber.Ctx) {
 	}
 }
 
-type PostRequestHandlerWithExtra[T any, Q any] func(body T, extra Q) (any, error)
-type PostRequestHandler[T any] func(body T) (any, error)
-type GetRequestHandlerWithExtra[Q any] func(extra Q) (any, error)
-type GetRequestHandler func() (any, error)
+type PostRequestHandlerWithExtra[T any, R any, Q any] func(body T, extra Q) (R, error)
+type PostRequestHandler[T any, R any] func(body T) (R, error)
+type GetRequestHandlerWithExtra[R any, Q any] func(extra Q) (R, error)
+type GetRequestHandler[R any] func() (R, error)
 type GetExtra[Q any] func(ctx *fiber.Ctx) (Q, error)
 
 func (r *RouteInfo) WithQuery(query string) *RouteInfo {
@@ -38,30 +38,31 @@ func (r *RouteInfo) WithParam(param string) *RouteInfo {
 }
 
 // A Simple Post Request with a typed param
-func Post[T any](group *ApiGroup, routeName string, body T, handler PostRequestHandler[T]) *RouteInfo {
-	wrappedHandler := func(body T, extra string) (any, error) {
+func Post[T any, R any](group *ApiGroup, routeName string, handler PostRequestHandler[T, R]) *RouteInfo {
+	wrappedHandler := func(body T, extra string) (R, error) {
 		return handler(body)
 	}
 	extraFunc := func(ctx *fiber.Ctx) (string, error) {
 		return "", nil
 	}
-	return PostWithExtra(group, routeName, body, wrappedHandler, extraFunc)
+	return PostWithExtra(group, routeName, wrappedHandler, extraFunc)
 }
 
 // A Post Request with a typed param body and an extra function using the Context
-func PostWithExtra[T any, Q any](group *ApiGroup, routeName string, body T, handler PostRequestHandlerWithExtra[T, Q], extraFunc GetExtra[Q]) *RouteInfo {
+func PostWithExtra[T, R, Q any](group *ApiGroup, routeName string, handler PostRequestHandlerWithExtra[T, R, Q], extraFunc GetExtra[Q]) *RouteInfo {
 	log.Println("Registering route", routeName)
 
 	// Blindly append the route to the array of routes for the group
 	routeInfo := RouteInfo{
 		RouteName: routeName,
-		Body:      body,
+		Body:      new(T),
 		RouteType: "POST",
 		GroupName: group.Name,
 		HasQuery:  false,
 		HasParams: false,
 		Queries:   []string{},
 		Params:    []string{},
+		Returns:   new(R),
 	}
 	group.Routes = append(group.Routes, &routeInfo)
 
@@ -114,8 +115,8 @@ func PostWithExtra[T any, Q any](group *ApiGroup, routeName string, body T, hand
 	return &routeInfo
 }
 
-func Get(group *ApiGroup, routeName string, handler GetRequestHandler) *RouteInfo {
-	wrappedHandler := func(extra string) (any, error) {
+func Get[R any](group *ApiGroup, routeName string, handler GetRequestHandler[R]) *RouteInfo {
+	wrappedHandler := func(extra string) (R, error) {
 		return handler()
 	}
 	extraFunc := func(ctx *fiber.Ctx) (string, error) {
@@ -124,12 +125,13 @@ func Get(group *ApiGroup, routeName string, handler GetRequestHandler) *RouteInf
 	return GetWithExtra(group, routeName, wrappedHandler, extraFunc)
 }
 
-func GetWithExtra[Q any](group *ApiGroup, routeName string, handler GetRequestHandlerWithExtra[Q], extraFunc GetExtra[Q]) *RouteInfo {
+func GetWithExtra[R, Q any](group *ApiGroup, routeName string, handler GetRequestHandlerWithExtra[R, Q], extraFunc GetExtra[Q]) *RouteInfo {
 	log.Println("Registering route", routeName)
 	routeInfo := RouteInfo{
 		RouteName: routeName,
 		RouteType: "GET",
 		GroupName: group.Name,
+		Returns:   new(R),
 	}
 	group.Routes = append(group.Routes, &routeInfo)
 

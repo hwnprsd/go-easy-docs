@@ -23,6 +23,19 @@ type AddDaoDto struct {
 	DaoId   uint   `json:"dao_id"`
 }
 
+type CreateUserDto struct {
+	Name    string `json:"name"`
+	Address string `json:"address"`
+	Age     uint   `json:"age"`
+}
+
+type User struct {
+	ID      string `json:"ID"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
+	Age     uint   `json:"age"`
+}
+
 func (s SwaggerApp) testHandler(body TestBody) (any, error) {
 	log.Println("Body", body.Foo)
 	return body, nil
@@ -32,12 +45,30 @@ func (s SwaggerApp) newTestHandler(body AddDaoDto) (any, error) {
 	return "OKAY", nil
 }
 
-func (s SwaggerApp) testHandlerWithQuery(body AddDaoDto, id string) (any, error) {
-	return id, nil
+type CraeteDDQuery struct {
+	Address  string
+	Quantity uint
+}
+
+func (s SwaggerApp) CreateDataDao(body AddDaoDto, user User) (any, error) {
+	return user, nil
 }
 
 func (SwaggerApp) getTest() (any, error) {
 	return "Looks Good", nil
+}
+
+func CreateUser(userData CreateUserDto) (User, error) {
+	return User{
+		Name:    "Roger",
+		Address: "21, Palm Drive",
+		Age:     80,
+	}, nil
+}
+
+func AuthMiddleware(ctx *fiber.Ctx) (User, error) {
+	// Check Auth
+	return User{}, nil
 }
 
 func Run() {
@@ -48,83 +79,21 @@ func Run() {
 	sApp := SwaggerApp{}
 
 	testGroup := fiberw.NewGroup(app, "/test")
-	fiberw.Post(testGroup, "/submit", TestBody{}, sApp.testHandler).WithQuery("tasty")
-	fiberw.Post(testGroup, "/rekt", TestBody{}, sApp.testHandler)
-	fiberw.PostWithExtra(testGroup, "/queryMe", AddDaoDto{}, sApp.testHandlerWithQuery, func(ctx *fiber.Ctx) (string, error) {
-		q := ctx.Query("simp")
-		return q, nil
-	}).WithQuery("simp")
-	fiberw.PostWithExtra(testGroup, "/pathMe/:address", AddDaoDto{}, sApp.testHandlerWithQuery, func(ctx *fiber.Ctx) (string, error) {
-		q1 := ctx.Params("address")
-		q2 := ctx.Query("maze")
-		return q1 + q2, nil
-	}).WithParam("address").WithQuery("maze")
-	fiberw.PostWithExtra(testGroup, "/pathMe2/:address", AddDaoDto{}, sApp.testHandlerWithQuery, func(ctx *fiber.Ctx) (string, error) {
-		q1 := ctx.Params("address")
-		q2 := ctx.Query("maze")
-		return q1 + q2, nil
-	}).WithParam("address").WithQuery("maze").WithParam("rand")
+	fiberw.Post(testGroup, "/submit", sApp.testHandler).WithQuery("tasty")
+	fiberw.Post(testGroup, "/rekt", sApp.testHandler)
+
+	fiberw.PostWithExtra(testGroup, "/pathMe2/:address", sApp.CreateDataDao, AuthMiddleware).WithParam("address").WithQuery("maze").WithParam("rand")
 
 	getGroup := fiberw.NewGroup(app, "/users")
-	fiberw.Get(getGroup, "/all", sApp.getTest)
 
-	daoGroup := fiberw.NewGroup(app, "/daos")
-	fiberw.Post(daoGroup, "/add", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add1", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add2", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add3", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add4", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add5", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add6", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add7", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add8", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add9", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add10", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add12", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add13", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add14", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add16", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add17", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add18", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add19", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add20", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add21", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add22", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add23", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add24", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add25", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add26", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add27", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add30", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add31", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add32", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add33", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add34", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add35", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add36", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add37", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add38", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add39", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add41", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add42", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add44", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add45", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add46", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add47", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add48", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add50", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add51", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add52", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add53", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add54", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add55", AddDaoDto{}, sApp.newTestHandler)
-	fiberw.Post(daoGroup, "/add56", AddDaoDto{}, sApp.newTestHandler)
-
+	fiberw.Post(getGroup, "/create-user", CreateUser)
 	// routes := app.GetRoutes()
 
 	app.Get("/docs", func(c *fiber.Ctx) error {
 		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
-		fiberw.WriteApiDocumentation("Test Application", "Used to test go-auto-swagger", c)
+		docs := fiberw.GenerateDocs("Test Application", "Used to test go-auto-docs")
+		c.Render("index", docs)
+		// fiberw.WriteApiDocumentation("Test Application", "Used to test go-auto-swagger", c)
 		return nil
 	})
 

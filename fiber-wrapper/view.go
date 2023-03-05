@@ -157,6 +157,7 @@ var DocString = `
       		var responseEditor = ace.edit("response-" + route.GroupName + route.RouteName, {
       			 mode: "ace/mode/json",
       		});
+                  responseEditor.setValue(JSON.stringify(route.Returns, null, 5), -1)
       		responseEditor.setReadOnly(true)
       
       		document.getElementById('btn-' + route.GroupName + route.RouteName).addEventListener('click', function(e) {

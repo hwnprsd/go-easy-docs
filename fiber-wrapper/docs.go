@@ -31,6 +31,7 @@ type ApiDoc struct {
 type RouteInfo struct {
 	RouteName   string
 	Body        any
+	Returns     any
 	Headers     any
 	RouteType   string
 	Description string
