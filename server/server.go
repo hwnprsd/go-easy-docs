@@ -50,8 +50,8 @@ type CraeteDDQuery struct {
 	Quantity uint
 }
 
-func (s SwaggerApp) CreateDataDao(body AddDaoDto, user User) (any, error) {
-	return user, nil
+func (s SwaggerApp) CreateDataDao(body AddDaoDto, user User) (*interface{}, error) {
+	return nil, nil
 }
 
 func (SwaggerApp) getTest() (any, error) {
@@ -59,6 +59,14 @@ func (SwaggerApp) getTest() (any, error) {
 }
 
 func CreateUser(userData *CreateUserDto) (*User, error) {
+	return &User{
+		Name:    "Roger",
+		Address: "21, Palm Drive",
+		Age:     80,
+	}, nil
+}
+
+func CreateUserGet() (*User, error) {
 	return &User{
 		Name:    "Roger",
 		Address: "21, Palm Drive",
@@ -79,14 +87,14 @@ func Run() {
 	sApp := SwaggerApp{}
 
 	testGroup := fiberw.NewGroup(app, "/test")
-	fiberw.Post(testGroup, "/submit", sApp.testHandler).WithQuery("tasty")
-	fiberw.Post(testGroup, "/rekt", sApp.testHandler)
 
 	fiberw.PostWithExtra(testGroup, "/pathMe2/:address", sApp.CreateDataDao, AuthMiddleware).WithParam("address").WithQuery("maze").WithParam("rand")
 
 	getGroup := fiberw.NewGroup(app, "/users")
 
-	fiberw.Post(getGroup, "/create-user", CreateUser).WithReturnType(User{})
+	fiberw.Post(getGroup, "/create-user", CreateUser)
+	fiberw.Get(getGroup, "/create-user", CreateUserGet)
+	fiberw.Post(getGroup, "/create-new-user", CreateUser)
 	// routes := app.GetRoutes()
 
 	app.Get("/docs", func(c *fiber.Ctx) error {

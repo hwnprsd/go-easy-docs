@@ -32,25 +32,26 @@ var DocString = `
                   <div class="accordion-body">
                      {{ with .Routes}}
                      {{range .}}	
-                     <div class="accordion" id="accordionFlush{{.GroupName}}{{.RouteName}}">
+                     <div class="accordion" id="accordionFlush{{.RouteType}}{{.GroupName}}{{.RouteName}}">
                         <div class="accordion-item">
-                           <h2 class="accordion-header" id="flush-heading-{{.GroupName}}{{.RouteName}}">
-                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{.GroupName}}{{.RouteName}}" aria-expanded="false" aria-controls="flush-{{.GroupName}}{{.RouteName}}">
+                           <h2 class="accordion-header" id="flush-heading-{{.RouteType}}{{.GroupName}}{{.RouteName}}">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}" aria-expanded="false" aria-controls="flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}">
                                  <b>
                                     <pre/><span class="badge text-bg-primary">{{.RouteType}}</span> {{.GroupName}}{{.RouteName}}</pre>
                                  </b>
                               </button>
                            </h2>
-                           <div id="flush-{{.GroupName}}{{.RouteName}}" class="accordion-collapse collapse"  data-bs-parent="#accordionFlush{{.GroupName}}{{.RouteName}}">
+                           <div id="flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}" class="accordion-collapse collapse"  data-bs-parent="#accordionFlush{{.RouteType}}{{.GroupName}}{{.RouteName}}">
                               <div class="accordion-body">
                                  <b>{{.Description}}</b>
+                                 {{ $RouteType := .RouteType }}
                                  {{ $GroupName := .GroupName }}
                                  {{ $RouteName := .RouteName }}
                                  {{ if .HasParams }}
 				 <p> <b> Path Parameters</b> </p>
                                  {{ with .Params }}
                                  {{ range $val := . }}
-                                 <pre> {{ $val }} <input id="{{ $GroupName }}{{ $RouteName }}PARAM{{ $val }}" /> </pre>
+                                 <pre> {{ $val }} <input id="{{ $RouteType }}{{ $GroupName }}{{ $RouteName }}PARAM{{ $val }}" /> </pre>
                                  {{ end }}
                                  {{ end }}
                                  {{ end }}
@@ -58,22 +59,22 @@ var DocString = `
 				 <p> <b> Query Parameters </b> </p>
                                  {{ with .Queries }}
                                  {{ range $val := . }}
-                                 <pre> {{ $val }} <input id="{{ $GroupName }}{{ $RouteName }}QUERY{{ $val }}" /> </pre>
+                                 <pre> {{ $val }} <input id="{{ $RouteType }}{{ $GroupName }}{{ $RouteName }}QUERY{{ $val }}" /> </pre>
                                  {{ end }}
                                  {{ end }}
                                  {{ end }}
                                  {{ if eq .RouteType "POST"}}
 				 <p> <b> Request Body </b> </p>
-                                 <div id="body-{{.GroupName}}{{.RouteName}}" class="code">
+                                 <div id="body-{{.RouteType}}{{.GroupName}}{{.RouteName}}" class="code">
                                     {{.Body}}
                                  </div>
                                  {{ end }}
                                  <br/>
-                                 <button class="btn btn-secondary" id="btn-{{.GroupName}}{{.RouteName}}">Send Request</button>
+                                 <button class="btn btn-secondary" id="btn-{{.RouteType}}{{.GroupName}}{{.RouteName}}">Send Request</button>
                                  <br/>
                                  <br/>
 				 <p> <b> Response Body </b> </p>
-                                 <div id="response-{{.GroupName}}{{.RouteName}}" class="code">
+                                 <div id="response-{{.RouteType}}{{.GroupName}}{{.RouteName}}" class="code">
                                  </div>
                               </div>
                            </div>
@@ -148,24 +149,24 @@ var DocString = `
       	for(const route of group.Routes) {
       		// Create a Body editor only the request type is POST (Change this for when adding headers?)
       		if(route.RouteType === "POST") { 
-      			var editor = ace.edit("body-" + route.GroupName + route.RouteName, {
+      			var editor = ace.edit("body-"+ route.RouteType + route.GroupName + route.RouteName, {
       				 mode: "ace/mode/json",
       			});
 
 			editor.setValue(JSON.stringify(route.Body, null, 5), -1);
       		}
-      		var responseEditor = ace.edit("response-" + route.GroupName + route.RouteName, {
+      		var responseEditor = ace.edit("response-" + route.RouteType + route.GroupName + route.RouteName, {
       			 mode: "ace/mode/json",
       		});
                   responseEditor.setValue(JSON.stringify(route.Returns, null, 5), -1)
       		responseEditor.setReadOnly(true)
       
-      		document.getElementById('btn-' + route.GroupName + route.RouteName).addEventListener('click', function(e) {
+      		document.getElementById('btn-' + route.RouteType + route.GroupName + route.RouteName).addEventListener('click', function(e) {
       			let query = false
       			if(route.HasQuery) {
       				query = {}
       				for (const q of route.Queries) {
-      					const id = route.GroupName + route.RouteName + "QUERY" + q
+      					const id = route.RouteType + route.GroupName + route.RouteName + "QUERY" + q
       					const value = document.getElementById(id)
       					query[q] = value.value
       					console.log("Setting query", query)
@@ -175,14 +176,14 @@ var DocString = `
       			if(route.HasParams) {
       				params = {}
       				for (const q of route.Params) {
-      					const id = route.GroupName + route.RouteName + "PARAM" + q
+      					const id = route.RouteType + route.GroupName + route.RouteName + "PARAM" + q
       					const value = document.getElementById(id)
       					params[q] = value.value
       				}
       			}
       			// Re-Init so we get the latest value when the function is called
       			const url = baseUrl + route.GroupName + route.RouteName
-      			const responseId = "response-" + route.GroupName + route.RouteName
+      			const responseId = "response-" + route.RouteType + route.GroupName + route.RouteName
       			console.log({query})
       			console.log({params})
       			if(route.RouteType === "GET") {
@@ -190,7 +191,7 @@ var DocString = `
       			}
       			else {
       				console.log(route)
-      				var editor = ace.edit("body-" + route.GroupName + route.RouteName, {
+      				var editor = ace.edit("body-" + route.RouteType + route.GroupName + route.RouteName, {
       					 mode: "ace/mode/json",
       				});
       				const postBody = editor.getValue()

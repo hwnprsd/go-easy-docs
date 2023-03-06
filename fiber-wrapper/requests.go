@@ -20,10 +20,10 @@ func handlePanic(c *fiber.Ctx) {
 	}
 }
 
-type PostRequestHandlerWithExtra[T any, R any, Q any] func(body T, extra Q) (R, error)
-type PostRequestHandler[T any, R any] func(body T) (R, error)
-type GetRequestHandlerWithExtra[R any, Q any] func(extra Q) (R, error)
-type GetRequestHandler[R any] func() (R, error)
+type PostRequestHandlerWithExtra[T any, R any, Q any] func(body T, extra Q) (*R, error)
+type PostRequestHandler[T any, R any] func(body T) (*R, error)
+type GetRequestHandlerWithExtra[R any, Q any] func(extra Q) (*R, error)
+type GetRequestHandler[R any] func() (*R, error)
 type GetExtra[Q any] func(ctx *fiber.Ctx) (Q, error)
 
 func (r *RouteInfo) WithQuery(query string) *RouteInfo {
@@ -52,7 +52,7 @@ func (r *RouteInfo) WithBodyType(bodyType any) *RouteInfo {
 
 // A Simple Post Request with a typed param
 func Post[T any, R any](group *ApiGroup, routeName string, handler PostRequestHandler[T, R]) *RouteInfo {
-	wrappedHandler := func(body T, extra string) (R, error) {
+	wrappedHandler := func(body T, extra string) (*R, error) {
 		return handler(body)
 	}
 	extraFunc := func(ctx *fiber.Ctx) (string, error) {
@@ -131,7 +131,7 @@ func PostWithExtra[T, R, Q any](group *ApiGroup, routeName string, handler PostR
 }
 
 func Get[R any](group *ApiGroup, routeName string, handler GetRequestHandler[R]) *RouteInfo {
-	wrappedHandler := func(extra string) (R, error) {
+	wrappedHandler := func(extra string) (*R, error) {
 		return handler()
 	}
 	extraFunc := func(ctx *fiber.Ctx) (string, error) {
