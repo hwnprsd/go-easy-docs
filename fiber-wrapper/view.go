@@ -92,7 +92,8 @@ var DocString = `
    </div>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.15.2/ace.min.js" integrity="sha512-9wsrxhzNVuW9XQgRmpSG9i23hheWGRZt0+M+T4vA/CXPLNEPCGsTXHaQi8/U5/gpuboqT0tFW+1hhUPzA4UHQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
    <script>
-      const baseUrl = "http://localhost:3000"
+      // const baseUrl = "http://localhost:3000"
+      const baseUrl = ""
       
       const makeGetRequest = async (url, responseId, queryParams, pathParams) => {
       	const editor = ace.edit(responseId, {
