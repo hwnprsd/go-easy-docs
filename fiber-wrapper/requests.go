@@ -37,6 +37,19 @@ func (r *RouteInfo) WithParam(param string) *RouteInfo {
 	return r
 }
 
+func (r *RouteInfo) WithReturnType(returnValue any) *RouteInfo {
+	r.Returns = fiber.Map{
+		"status_code": 200,
+		"data":        returnValue,
+	}
+	return r
+}
+
+func (r *RouteInfo) WithBodyType(bodyType any) *RouteInfo {
+	r.Body = bodyType
+	return r
+}
+
 // A Simple Post Request with a typed param
 func Post[T any, R any](group *ApiGroup, routeName string, handler PostRequestHandler[T, R]) *RouteInfo {
 	wrappedHandler := func(body T, extra string) (R, error) {
@@ -50,8 +63,7 @@ func Post[T any, R any](group *ApiGroup, routeName string, handler PostRequestHa
 
 // A Post Request with a typed param body and an extra function using the Context
 func PostWithExtra[T, R, Q any](group *ApiGroup, routeName string, handler PostRequestHandlerWithExtra[T, R, Q], extraFunc GetExtra[Q]) *RouteInfo {
-	log.Println("Registering route", routeName)
-
+	log.Println("Registering route", group.Name, routeName)
 	// Blindly append the route to the array of routes for the group
 	routeInfo := RouteInfo{
 		RouteName: routeName,
@@ -62,7 +74,10 @@ func PostWithExtra[T, R, Q any](group *ApiGroup, routeName string, handler PostR
 		HasParams: false,
 		Queries:   []string{},
 		Params:    []string{},
-		Returns:   new(R),
+		Returns: fiber.Map{
+			"status_code": 200,
+			"data":        new(R),
+		},
 	}
 	group.Routes = append(group.Routes, &routeInfo)
 
@@ -131,7 +146,10 @@ func GetWithExtra[R, Q any](group *ApiGroup, routeName string, handler GetReques
 		RouteName: routeName,
 		RouteType: "GET",
 		GroupName: group.Name,
-		Returns:   new(R),
+		Returns: fiber.Map{
+			"status_code": 200,
+			"data":        new(R),
+		},
 	}
 	group.Routes = append(group.Routes, &routeInfo)
 

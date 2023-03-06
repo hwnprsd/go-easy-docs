@@ -58,8 +58,8 @@ func (SwaggerApp) getTest() (any, error) {
 	return "Looks Good", nil
 }
 
-func CreateUser(userData CreateUserDto) (User, error) {
-	return User{
+func CreateUser(userData *CreateUserDto) (*User, error) {
+	return &User{
 		Name:    "Roger",
 		Address: "21, Palm Drive",
 		Age:     80,
@@ -86,7 +86,7 @@ func Run() {
 
 	getGroup := fiberw.NewGroup(app, "/users")
 
-	fiberw.Post(getGroup, "/create-user", CreateUser)
+	fiberw.Post(getGroup, "/create-user", CreateUser).WithReturnType(User{})
 	// routes := app.GetRoutes()
 
 	app.Get("/docs", func(c *fiber.Ctx) error {
