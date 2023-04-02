@@ -188,7 +188,7 @@ func GetWithExtra[R, Q any](group *ApiGroup, routeName string, handler GetReques
 
 type RawRequestHandler = func(*fiber.Ctx) error
 
-func RawGet(group *ApiGroup, routeName string, handler RawRequestHandler) {
+func RawGet(group *ApiGroup, routeName string, handler RawRequestHandler) *RouteInfo {
 	log.Println("Registering route", routeName)
 	routeInfo := RouteInfo{
 		RouteName: routeName,
@@ -215,9 +215,11 @@ func RawGet(group *ApiGroup, routeName string, handler RawRequestHandler) {
 		defer handlePanic(ctx)
 		return handler(ctx)
 	})
+
+	return &routeInfo
 }
 
-func RawPost(group *ApiGroup, routeName string, handler RawRequestHandler) {
+func RawPost(group *ApiGroup, routeName string, handler RawRequestHandler) *RouteInfo {
 	log.Println("Registering route", routeName)
 	routeInfo := RouteInfo{
 		RouteName: routeName,
@@ -244,4 +246,6 @@ func RawPost(group *ApiGroup, routeName string, handler RawRequestHandler) {
 		defer handlePanic(ctx)
 		return handler(ctx)
 	})
+
+	return &routeInfo
 }
