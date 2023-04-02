@@ -185,3 +185,63 @@ func GetWithExtra[R, Q any](group *ApiGroup, routeName string, handler GetReques
 	})
 	return &routeInfo
 }
+
+type RawRequestHandler = func(*fiber.Ctx) error
+
+func RawGet(group *ApiGroup, routeName string, handler RawRequestHandler) {
+	log.Println("Registering route", routeName)
+	routeInfo := RouteInfo{
+		RouteName: routeName,
+		RouteType: "GET",
+		GroupName: group.Name,
+		Returns:   "Unknown",
+	}
+	group.Routes = append(group.Routes, &routeInfo)
+
+	exists, index := false, -1
+	for i, g := range ApplicationData.Groups {
+		if g.Name == group.Name {
+			exists = true
+			index = i
+		}
+	}
+	if !exists {
+		ApplicationData.Groups = append(ApplicationData.Groups, *group)
+	} else {
+		ApplicationData.Groups[index] = *group
+	}
+
+	group.Ctx.Get(routeName, func(ctx *fiber.Ctx) error {
+		defer handlePanic(ctx)
+		return handler(ctx)
+	})
+}
+
+func RawPost(group *ApiGroup, routeName string, handler RawRequestHandler) {
+	log.Println("Registering route", routeName)
+	routeInfo := RouteInfo{
+		RouteName: routeName,
+		RouteType: "POST",
+		GroupName: group.Name,
+		Returns:   "Unknown",
+	}
+	group.Routes = append(group.Routes, &routeInfo)
+
+	exists, index := false, -1
+	for i, g := range ApplicationData.Groups {
+		if g.Name == group.Name {
+			exists = true
+			index = i
+		}
+	}
+	if !exists {
+		ApplicationData.Groups = append(ApplicationData.Groups, *group)
+	} else {
+		ApplicationData.Groups[index] = *group
+	}
+
+	group.Ctx.Get(routeName, func(ctx *fiber.Ctx) error {
+		defer handlePanic(ctx)
+		return handler(ctx)
+	})
+}
