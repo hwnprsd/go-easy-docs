@@ -10,7 +10,6 @@ var DocString = `
    		height: auto
    }
 	 .accordion-button:focus {
-    box-shadow: none;
 		border: none;
     border-color: rgba(0,0,0,.125);
 	}
@@ -22,10 +21,59 @@ var DocString = `
     box-shadow: none;
 }
 
-		.accordion-button:not(.collapsed){
+.accordion-button:not(.collapsed){
         box-shadow: none;
-  outline: none;
+				background-color: transparent;
+  			outline: none;
 }
+
+.accordion-button {
+  padding: 0.25rem 1rem;
+  line-height: 1.2;
+}
+
+.header-bg-green.accordion-button {
+  box-shadow: 0 0 5px rgba(73, 204, 144, 0.5);
+  border: 1px solid #49cc90;
+}
+
+.header-bg-blue.accordion-button {
+  box-shadow: 0 0 5px rgba(97, 175, 254, 0.5);
+	border: 1px solid #61affe;
+}
+.header-bg-green.accordion-button:not(.collapsed) {
+	background-color: #E8F6F0;
+}
+
+.header-bg-blue.accordion-button:not(.collapsed) {
+	background-color: #EBF3FB;
+}
+
+.accordion-body-bg-green {
+  box-shadow: 0 0 5px rgba(73, 204, 144, 0.5);
+  border: 1px solid #49cc90;
+	background-color: #E8F6F0;
+}
+
+.accordion-body-bg-blue {
+  box-shadow: 0 0 5px rgba(97, 175, 254, 0.5);
+	border: 1px solid #61affe;
+	background-color: #EBF3FB;
+}
+
+.accordion-body-bg-green {
+  box-shadow: 0 0 5px rgba(73, 204, 144, 0.5);
+  border: 1px solid #49cc90;
+}
+.accordion-body-bg-blue {
+  box-shadow: 0 0 5px rgba(97, 175, 254, 0.5);
+	border: 1px solid #61affe;
+}
+
+.group-title {
+	margin: 5px 5px;
+}
+
 
 </style>
    <nav class="navbar bg-body-tertiary">
@@ -43,7 +91,7 @@ var DocString = `
          <div class="accordion-item">
             <span class="accordion-header" id="{{.Name}}">
                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{.Name}}" aria-expanded="true" >
-                  <p class=".text-primary" style="font-weight: bold; font-size: 24px;" >{{.Name}}</p>
+                  <p class="group-title" style="font-weight: bold; font-size: 24px;" >{{.Name}}</p>
                </button>
 							</span>
             <div id="collapse-{{.Name}}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#main-{{.Name}}">
@@ -56,9 +104,9 @@ var DocString = `
                            <h2 class="accordion-header" id="flush-heading-{{.RouteType}}{{.GroupName}}{{.RouteName}}">
                               <button class='accordion-button collapsed list-group-item list-group-item-action  justify-content-between
 															{{ if eq .RouteType "POST"}} 
-																	list-group-item-success
+																	list-group-item-success header-bg-green
 															{{ else }}
-																	list-group-item-primary
+																	list-group-item-primary header-bg-blue
 															{{ end }}
 																	' 
 																	style="color: black; padding-top: 12px; padding-bottom: 0px;"
@@ -79,12 +127,13 @@ var DocString = `
                               </button>
                            </h2>
                            <div id="flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}" class="accordion-collapse collapse"  data-bs-parent="#accordionFlush{{.RouteType}}{{.GroupName}}{{.RouteName}}">
-                              <div class="accordion-body" 
+                              <div class='
 																	{{ if eq .RouteType "POST"}} 
-																		style="background-color: #E8F6F0;"
+																	accordion-body accordion-body-bg-green
 																	{{ else }}
-																		style="background-color: #EBF3FB;"
+																	accordion-body accordion-body-bg-blue
 																	{{ end }}
+															' 
 															>
                                  <b>{{.Description}}</b>
                                  {{ $RouteType := .RouteType }}
@@ -263,5 +312,4 @@ var DocString = `
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 </html>
-
 `
