@@ -2,13 +2,32 @@ package fiberw
 
 var DocString = `
 <!DOCTYPE html>
-<style type="text/css" media="screen">
-   .code { 
-   height: 100px
-   }
-</style>
 <body>
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+<style type="text/css" media="screen">
+   .code { 
+   		height: auto
+   }
+	 .accordion-button:focus {
+    box-shadow: none;
+		border: none;
+    border-color: rgba(0,0,0,.125);
+	}
+	.accordion-item {
+  	border: none;
+	}
+	.panel-heading:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+		.accordion-button:not(.collapsed){
+        box-shadow: none;
+  outline: none;
+}
+
+</style>
    <nav class="navbar bg-body-tertiary">
       <div class="container-fluid">
          <span class="navbar-brand mb-0 h1">{{.ApplicationName}}</span>
@@ -20,29 +39,53 @@ var DocString = `
       <h3>API Routes</h3>
       {{ with .Groups }}
       {{range .}}	
-      <div class="accordian card" id="main-{{.Name}}">
+      <div class="accordion card" id="main-{{.Name}}">
          <div class="accordion-item">
-            <h2 class="accordion-header" id="{{.Name}}">
+            <span class="accordion-header" id="{{.Name}}">
                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{.Name}}" aria-expanded="true" >
-                  <h3 class=".text-primary m-3">{{.Name}}</h3>
+                  <p class=".text-primary" style="font-weight: bold; font-size: 24px;" >{{.Name}}</p>
                </button>
-            </h2>
+							</span>
             <div id="collapse-{{.Name}}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#main-{{.Name}}">
                <div class="card-body">
-                  <div class="accordion-body">
+                  <div class="accordion-body list-group">
                      {{ with .Routes}}
                      {{range .}}	
                      <div class="accordion" id="accordionFlush{{.RouteType}}{{.GroupName}}{{.RouteName}}">
                         <div class="accordion-item">
                            <h2 class="accordion-header" id="flush-heading-{{.RouteType}}{{.GroupName}}{{.RouteName}}">
-                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}" aria-expanded="false" aria-controls="flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}">
-                                 <b>
-                                    <pre/><span class="badge text-bg-primary">{{.RouteType}}</span> {{.GroupName}}{{.RouteName}}</pre>
+                              <button class='accordion-button collapsed list-group-item list-group-item-action  justify-content-between
+															{{ if eq .RouteType "POST"}} 
+																	list-group-item-success
+															{{ else }}
+																	list-group-item-primary
+															{{ end }}
+																	' 
+																	style="color: black; padding-top: 12px; padding-bottom: 0px;"
+																	type="button" data-bs-toggle="collapse" 
+																	data-bs-target="#flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}" 
+																	aria-expanded="false" 
+																	aria-controls="flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}">
+                                 <b style="padding: 0px">
+                                    <pre><span class="badge" 
+																	{{ if eq .RouteType "POST"}} 
+																			style="font-size: 14px; color: white; background-color: green; "
+																	{{ else }}
+																			style="font-size: 14px; color: white; background-color: blue;"
+																	{{ end }}
+																		>
+																			{{.RouteType}}</span> <span style="font-size: 16px;">{{.GroupName}}{{.RouteName}}</span></pre>
                                  </b>
                               </button>
                            </h2>
                            <div id="flush-{{.RouteType}}{{.GroupName}}{{.RouteName}}" class="accordion-collapse collapse"  data-bs-parent="#accordionFlush{{.RouteType}}{{.GroupName}}{{.RouteName}}">
-                              <div class="accordion-body">
+                              <div class="accordion-body" 
+																	{{ if eq .RouteType "POST"}} 
+																		style="background-color: #E8F6F0;"
+																	{{ else }}
+																		style="background-color: #EBF3FB;"
+																	{{ end }}
+															>
                                  <b>{{.Description}}</b>
                                  {{ $RouteType := .RouteType }}
                                  {{ $GroupName := .GroupName }}
@@ -70,7 +113,7 @@ var DocString = `
                                  </div>
                                  {{ end }}
                                  <br/>
-                                 <button class="btn btn-secondary" id="btn-{{.RouteType}}{{.GroupName}}{{.RouteName}}">Send Request</button>
+                                 <button class="btn btn-light btn-sm" id="btn-{{.RouteType}}{{.GroupName}}{{.RouteName}}">Send Request</button>
                                  <br/>
                                  <br/>
 				 <p> <b> Response Body </b> </p>
@@ -86,6 +129,7 @@ var DocString = `
                </div>
             </div>
          </div>
+         </div>
          {{end}}
          {{end}}
       </div>
@@ -97,7 +141,9 @@ var DocString = `
       
       const makeGetRequest = async (url, responseId, queryParams, pathParams) => {
       	const editor = ace.edit(responseId, {
-      		 mode: "ace/mode/json",
+					 autoScrollEditorIntoView: true,
+						maxLines: 30,
+						minLines: 2,
       	});
       	editor.setValue("Making API Call to " + url)
       	let query = {}
@@ -120,7 +166,10 @@ var DocString = `
       
       const makePostRequest = async (url, body, responseId, queryParams, pathParams) => {
       	const editor = ace.edit(responseId, {
-      		 mode: "ace/mode/json",
+      		//  mode: "ace/mode/json",
+					 autoScrollEditorIntoView: true,
+						maxLines: 30,
+						minLines: 2,
       	});
       	editor.setValue("Making API Call to " + url)
       	console.log(queryParams)
@@ -151,13 +200,19 @@ var DocString = `
       		// Create a Body editor only the request type is POST (Change this for when adding headers?)
       		if(route.RouteType === "POST") { 
       			var editor = ace.edit("body-"+ route.RouteType + route.GroupName + route.RouteName, {
-      				 mode: "ace/mode/json",
+      				//  mode: "ace/mode/json",
+							 autoScrollEditorIntoView: true,
+        				maxLines: 30,
+        				minLines: 2
       			});
 
 			editor.setValue(JSON.stringify(route.Body, null, 5), -1);
       		}
       		var responseEditor = ace.edit("response-" + route.RouteType + route.GroupName + route.RouteName, {
-      			 mode: "ace/mode/json",
+      			//  mode: "ace/mode/json",
+							 autoScrollEditorIntoView: true,
+        				maxLines: 30,
+        				minLines: 2
       		});
                   responseEditor.setValue(JSON.stringify(route.Returns, null, 5), -1)
       		responseEditor.setReadOnly(true)
@@ -208,4 +263,5 @@ var DocString = `
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 </html>
+
 `
