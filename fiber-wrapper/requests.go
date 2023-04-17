@@ -242,7 +242,7 @@ func RawPost(group *ApiGroup, routeName string, handler RawRequestHandler) *Rout
 		ApplicationData.Groups[index] = *group
 	}
 
-	group.Ctx.Get(routeName, func(ctx *fiber.Ctx) error {
+	group.Ctx.Post(routeName, func(ctx *fiber.Ctx) error {
 		defer handlePanic(ctx)
 		return handler(ctx)
 	})
